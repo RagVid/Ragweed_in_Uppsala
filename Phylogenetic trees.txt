@@ -232,34 +232,36 @@ We do this with GBlocks programme
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-BEAUti 1.8.4 BEAST 
+BEAUti v2.7.4 and BEAST v2.7.1 
 
- parameters that were changed from default
+ parameters that were set or changed from default (paramaters not mentioned stayed untouched)
 
-- HKY - Gamma C4
+- subs model HKY - Gamma Categories 4
 - strict clock
-- Calibrated yule
-- MCMC 1 000 000
+- Calibrated yule model
+
+- Set uniform MRCA priors for the calibrated nodes, set the lower and upper limit to MYA
+- MCMC 1 000 000, increased if traccer showed it as insufficient
 
 Upload the .xml file back to cluster, go to folder
 
 module load beagle/3.1.2
-module load beast1/1.8.4
+module load beast1/2.7.1
 beast .xml
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-TimeTree Article https://onlinelibrary.wiley.com/doi/10.1111/jipb.13078
-           > tables and trees 
+TimeTree Article
+
+https://onlinelibrary.wiley.com/doi/10.1111/jipb.13078
+          
+  > tables and trees 
+  
 https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fjipb.13078&file=jipb13078-sup-0002-Supplemental_Figures.pdf
            
 Maximum likelyhood trees 
-> Ambrosia_trifida_vs_Ambrosia_artemisiifolia = 10.2723 MY
-> Ambrosia vs Parthenium = 21.3815 MY
-
-
-module load beagle/3.1.2
-module load beast2/2.7.1
+> Ambrosia_trifida_vs_Ambrosia_artemisiifolia = 10.2723 MYA
+> Ambrosia vs Parthenium = 21.3815 MYA
 
 
 
