@@ -1,0 +1,52 @@
+SUPPLEMENTARY MATERIAL
+
+PRIMER DESIGN
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Bedtools for the fasta sequences around chosen SNPs or Indels
+
+module load bedtools
+
+echo -e h1s7'\t'48593207'\t'48593607'\t'48593407 >> SNPss7.bed
+
+bedtools getfasta -fi ~/om62_scratch/ragweed2022/ref/ragweed-dipasm-hap1.fasta -bed SNPss7.bed -split -name > InDelFastaREgions_CHr7a.fasta
+
+
+
+# SNP or INDEL genotypes from VCF format looptidoop
+
+while read line1 line2 ; 
+
+do
+    
+cat ~/om62_scratch/ragweed2022/vcf/ragweed-dipasm-hap1.imputed.vcf | grep -v "#" | awk -v var1=${line1} -v var2=${line2} '{if ($1 == var1 && $2 == var2) print $1, $2, $4, $5}' >> h1s5_infoSNPs.locs ;
+done < hb5bTop20fst.locs
+
+
+
+$$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+Check the surrounding area of SNP in fst file
+
+ echo "SNP name 48593407" >> FSTaroundourSNP.fst ; grep -C 100 -w 48593407  "/fs03/om62/ragweed2022/lostruct/mod-analysis/h1s5/hb5b_45518019-50939002.weir.fst" >> FSTaroundourSNP.fst
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+BLAST a nucl seq 
+
+module load blast
+
+blastn -query InDelFastaREgions_CHr7a.fasta -word_size ?? -db "/fs03/om62/ragweed2022/ref/ragweed-dipasm-hap1.fasta"  -out  SequenceBlastResults.out
+
+
+# to do the database setup first
+makeblastdb -in "/fs03/om62/ragweed2022/ref/ragweed-dipasm-hap1.fasta" -dbtype nucl
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
