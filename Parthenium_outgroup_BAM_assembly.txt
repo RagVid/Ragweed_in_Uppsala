@@ -1,0 +1,84 @@
+Getting my OUTGROUP PARTHENIUM ARGENTATUM
+
+- download a .sra file from NCBI with SRA tools, this is raw reads data from sequencing
+
+prefetch SRR000001
+
+- Convert it to fastq
+
+fastq-dump SRR000001
+
+
+>create a downloadandconvert.sh file script with this inside
+
+#!/bin/bash
+#SBATCH -n 1
+#SBATCH -c 8
+#SBATCH --mem-per-cpu=6G
+#SBATCH -t 12:00:00
+
+filename=$1
+
+cd "/fs03/om62/ragweed2022/dating/Parthenium_argentatum/"
+module load sra-tools/3.0.0
+prefetch  ${filename}
+fastq-dump --split-files ${filename}
+
+
+>You can run it in a loop like this 
+
+while read line1 line2; do sbatch -J ${line2} -e ${line2}.e -o ${line2}.o downloadadnconvvert.sh ${line1}; done < list.SRR.txt
+
+while read line1 ; do sbatch -J ${line1} -e ${line1}.e -o ${line1}.o downloadadnconvvert.sh ${line1}; done < list.SRR.txt
+#need a list of filenames as well
+file_name_1 and_second_column_is_name_of_out&error
+
+
+- ADAPTer Identify 
+
+module load adapterremoval/2.3.1
+
+AdapterRemoval --identify-adapters  --file1 SRR5241418_1.fastq  --file2 SRR5241418_2.fastq
+
+module load adapterremoval/2.3.1
+
+while read line1 line2; 
+do
+ AdapterRemoval --identify-adapters  --file1 $line1  --file2 $line2 
+done < fastq.list >> Mystery_ADAPTERS_Revealed.txt
+
+cat Mystery_ADAPTERS_Revealed.txt | grep 'adapter1\|adapter2'
+
+> Running the BAM paleomix pipeline
+
+Submitted as a job - paleomix.sh
+
+#!/bin/bash
+#SBATCH --job-name=paleomix-parg
+#SBATCH --account=ha22
+#SBATCH --ntasks=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=12
+#SBATCH --mem-per-cpu=16G
+#SBATCH --time=48:00:00
+#SBATCH --output=paleomix-parg.out
+#SBATCH --error=paleomix-parg.err
+
+module load paleomix/1.2.13.4-python2
+module load adapterremoval/2.3.1
+module load mapdamage/2.0.9-u1
+
+source /usr/local2/bioinformatics/bioansible_env.sh
+module load bwa/v0.7.15
+module load samtools/1.8
+
+cd ~/ha22_scratch/parg/
+
+paleomix bam_pipeline run /home/vterzer/ha22_scratch/parg/Parthenium_argentatum.yaml \
+        --jar-root=/home/vterzer/om62_scratch/jar/ \
+        --max-threads 12 \
+        --bwa-max-threads 12 \
+        --adapterremoval-max-threads 12 \
+        --jre-option \
+        -Xmx16g \
+        --temp-root /home/vterzer/ha22_scratch/parg/temp/
