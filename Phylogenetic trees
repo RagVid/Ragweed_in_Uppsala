@@ -1,0 +1,266 @@
+SUPPLEMENTARY MATERIALS
+
+PHYLOGENETIC TREES 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+BUSCO-RAGWEED ORTHOFINDER 
+
+Command-line Orthofinder was run on the M3 cluster
+The RagweedBUSCOfastasfolder contained protein two fasta files containing of all BUSCO genes and Ragweed genes
+
+/fs03/om62/OrthoFinder/orthofinder -f "/RagweedBUSCOfastasfolder/"
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+LIST OF BUSCO GENES FOR THE RAGWEED SPECIES TREE
+
+A list of genes was obtained from the Orthofinder results (e.g. rw09417-RA, rw09443-RA, rw53427-RA...). The locations of these genes were called from the reference annotation file.
+
+while read line; 
+do cat /ragweed-dipasm-hap1-annot-GO-1e-6.txt | 
+grep -w "${line}" | awk '{print $2, $3, $4, $5}'; 
+done < RagweedGenesBuscoOrthologs/ListofGenes2485.txt > busco_locs.txt
+
+Genes were sorted on the basis of their location.
+First, the genes that are in inversions were obtained!
+
+while read line1 line2 line3; 
+do cat busco_locs.txt | 
+awk  -v chr="${line1}" -v start="${line2}" -v end="${line3}" '{if($2 == chr && $3 >= start && $4 <= end) print $0}'; 
+done < inversion_locations.list > buscos_in_inversions.txt
+
+And then the genes outside the inversions as well!
+
+grep -v -f buscos_in_inversions.txt busco_locs.txt > buscos_out_inversions.txt
+
+inversion_locations.list:
+
+h1s2 57777580 72284242
+h1s4 44528922 50697186
+h1s5 40446189 44576095
+h1s5 45518019 50939002
+h1s6 24027582 25103145
+h1s6 48962575 52840119
+h1s7 46660557 53968863
+h1s7 60780800 67816557
+h1s8 5270283 22603061
+h1s10 17807536 24273803
+h1s11 41106486 43297364
+h1s14 7756423 12693795
+h1s16 13758067 15426656
+h1s16 33194003 46868365
+h1s17 13699730 16484829
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+LIST OF INVERSION GENES
+
+
+List of genes for each inversion with gene names, 
+
+while read line1 line2 line3; 
+do
+cat "/ragweed-dipasm-hap1-annot-GO-1e-6.txt" | 
+awk  -v chr="${line1}" -v start="${line2}" -v end="${line3}" '{if($3 == chr && $4 >= start && $5 <= end) print $0}' >> $line1:$line2-$line3.txt ; 
+done < inversion_locations.list
+
+And then a genelist.txt without names for each separate inversion,
+
+while read line; 
+do
+ awk '{print $2, $3, $4}'; 
+done < "/InversionsGeneLists/h1s10:17807536-24273803.txt" > genelist.txt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+GETTING THE FASTAS FOR GENES IN EACH INVERSION FOR CHOSEN INDIVIDUALS
+
+A list of alignments to use for e.g. inversion trees, here we choose 6 homozygotes for inversion and wildtype + all the outgroups available
+in bamlist.txt
+- first 6 are inverted Ragweed
+- following 6 are wildtype Ragweed
+- then all the outgroups we have
+example of bamlist.txt
+
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/Caluire-47.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/EU2-17-10.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/EU2-23-17.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/FL-9.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/NJ-C-3.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/SC-1.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/280808-1-24.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/EU2-24-1.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/IA-6.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/IW-11.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/pop2-2.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-modern/StGalmier-2.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_bidentata_Missouri.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_carduacea.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_chamissonis.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_hispida.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_artemisioides_2023.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_canescens_2023.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_crithmilifolia_2023.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_hispida_2023.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_pinnatifida_2023.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_trifida_2023.ragweed2021.realigned.bam
+/home/vterzer/om62_scratch/ragweed2022/bam-outgroups/Ambrosia_trifida_var_texana_2023.ragweed2021.realigned.bam
+
+
+module load angsd/0.931
+module load samtools
+
+while read CHR START STOP
+do
+echo $CHR:$START-$STOP > $CHR-$START-$STOP.region
+
+mkdir $CHR-$START-$STOP
+
+while read bamloc
+do
+samplename=$(echo $bamloc | awk -F "/" '{print $7}' | awk -F "." '{print $1}')
+
+echo $bamloc > $samplename.bamloc
+
+angsd \
+-rf $CHR-$START-$STOP.region \
+-bam $samplename.bamloc \
+-ref ~/om62_scratch/ragweed2022/ref/ragweed-dipasm-hap1.fasta \
+-doCounts 1 \
+-doFasta 2 \
+-GL 1 \
+-baq 2 \
+-minMapQ 30 \
+-minQ 20 \
+-setMinDepth 3 \
+-out $CHR-$START-$STOP/$samplename
+
+samtools faidx $CHR-$START-$STOP/$samplename.fa.gz -r $CHR-$START-$STOP.region | sed "s/>/>$samplename-/" > $CHR-$START-$STOP/$samplename.fasta
+
+# clean up
+rm -f $CHR-$START-$STOP/$samplename.arg
+rm -f $CHR-$START-$STOP/$samplename.fa.gz
+rm -f $CHR-$START-$STOP/$samplename.fa.gz.fai
+rm -f $CHR-$START-$STOP/$samplename.fa.gz.gzi
+rm -f $samplename.bamloc
+
+done < bamlist.txt
+
+# remove gene region file
+rm -f $CHR-$START-$STOP.region
+
+done < genelist.txt
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+When the fastas are all done we Czech if any are empty. We dont want any missalignments for BEAST
+If a gene fasta is missing in only one on the plants the big final fasta will not be alligned 
+
+for fasta in ./*/*/*
+ do      
+ [ -s $fasta ] && echo "$fasta file has something" || echo "$fasta is empty"
+
+ done | grep empty | grep -oP '(?<=./).*?(?=/)' >> badgenes.txt
+
+# reading from the badgenes.txt list which includes these "bad" genes. We delete those files: 
+
+while read badgen
+ do rm -rf  $badgen
+ echo Exterminating...
+done < badgenes.txt
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Once the fastas are ready we compile them together in a big fasta file for each plant first
+trim the bamlist.txt first to get the variant.txt we need for compiling them
+
+cat bamlist.txt | grep -oP '(?<=bam).*(?=ragweed2021)' | grep -oP '(?<=/).*(?=.)' > variant.txt
+
+while read variant
+do
+
+echo "compiling $variant fasta like a maniac : "Boop bE boop eeeeeek ekEKee! " " 
+ 
+find -name  "$variant.fasta" -exec cat {} + > $variant.final.fasta 
+
+sed  -i "/$variant/d" $variant.final.fasta #deletes lines with names (we only need one fasta header per plant)
+sed -i "1 i\>$variant" $variant.final.fasta #adds the name only in the first line -> fasta header
+
+done < variant.txt
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Now compile multiple big plant fastas in our directory into the big final fasta 
+There shouldnt be any extra fasta files in the directory at this point
+
+for Fasta in ./*fasta
+
+ do 
+echo Copy...
+ cat $Fasta >> TemporaryFIN.fasta
+echo Paste!
+done
+
+cat TemporaryFIN.fasta | tr N - >  Final.fasta #change "N" to "-" so GBlocks sees at as a gap 
+rm -rf TemporaryFIN.fasta
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+The Final.fasta has to be trimmed down to achieve better BEAST results.
+We do this with GBlocks programme
+
+./GBlocks #runs the GBlocks already in each inversion directory
+
+1
+ - Choose Final.fasta , set the type to DNA
+
+2 
+ - Set Block paramaters to:
+
+  1 - minimum 
+  2 - minimum
+  3 - 2500
+  4 - 5
+  5 - Half
+3 
+ - GET THEM GBlocks
+
+- The result will be a slimmer fasta file. 
+- This is what we use to create the BEAST file => This is done with BEAUti on a PC
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+BEAUti 1.8.4 BEAST 
+
+ parameters that were changed from default
+
+- HKY - Gamma C4
+- strict clock
+- Calibrated yule
+- MCMC 1 000 000
+
+Upload the .xml file back to cluster, go to folder
+
+module load beagle/3.1.2
+module load beast1/1.8.4
+beast .xml
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+TimeTree Article https://onlinelibrary.wiley.com/doi/10.1111/jipb.13078
+           > tables and trees 
+https://onlinelibrary.wiley.com/action/downloadSupplement?doi=10.1111%2Fjipb.13078&file=jipb13078-sup-0002-Supplemental_Figures.pdf
+           
+Maximum likelyhood trees 
+> Ambrosia_trifida_vs_Ambrosia_artemisiifolia = 10.2723 MY
+> Ambrosia vs Parthenium = 21.3815 MY
+
+
+module load beagle/3.1.2
+module load beast2/2.7.1
+
+
+
+
